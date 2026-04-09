@@ -74,6 +74,8 @@ npm install
 1. 在云枢平台设计表单
 2. 导出 HTML 模板，保存为 `template.html`（覆盖项目根目录的模板文件）
 
+   ![云枢导出HTML模板位置示意](云枢导出html位置.png)
+
 ### 第三步：生成类型定义
 
 ```bash
