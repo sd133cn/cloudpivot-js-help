@@ -1,0 +1,14 @@
+{
+  "name": "cloudpivot-form-dev",
+  "version": "1.0.0",
+  "description": "云枢表单本地开发工具 - 支持VSCode自动补全",
+  "type": "module",
+  "scripts": {
+    "extract": "node scripts/extract.mjs",
+    "refresh-types": "node scripts/refresh-types.mjs",
+    "dev": "tsc --watch --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0"
+  }
+}
