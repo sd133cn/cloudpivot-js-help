@@ -21,7 +21,7 @@
 | 关键约束 1–11（违反即产出无效代码） | 本文件下方「关键约束」 | 每次改 `src/` 之前 |
 | 生命周期、控件取值、子表、按钮的写法 | skill `cloudpivot-form-dev` → `references/code-patterns.md` | 写 `custom.ts` 时 |
 | 控件标签与属性清单、容器/子表/标签页嵌套、自定义 HTML 区域 | skill `cloudpivot-form-dev` → `references/controls-html.md` | 改 `custom.html` 时 |
-| 官方 API 原文 | `表单开发API/` | 上面两处不够用时 |
+| 官方 API 原文（`表单开发API/` 路由表见 SKILL.md） | skill `cloudpivot-form-dev` | skill 参考未覆盖时 |
 
 **改 `src/custom.ts` 或 `src/custom.html` 之前，先用 skill 工具加载 `cloudpivot-form-dev`。**
 
