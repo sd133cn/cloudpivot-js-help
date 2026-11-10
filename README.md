@@ -62,7 +62,7 @@ sudo yum install -y nodejs
 
 ```bash
 # 克隆或下载项目
-git clone <项目地址>
+git clone https://github.com/sd133cn/cloudpivot-js-help.git
 cd cloudpivot-js-help
 
 # 安装依赖
