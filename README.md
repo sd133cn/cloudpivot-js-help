@@ -159,19 +159,18 @@ form.on('onRendered', function(data) {
 
 **方式一：直接对话**（推荐）
 
-让AI读取项目中的 `AGENTS.md` 文件，获取：
+OpenCode、Trae 等工具会自动把项目根目录的 `AGENTS.md` 载入上下文，并按其中的指引加载 `cloudpivot-form-dev` skill，**对话时无需点名文件**。AI 会自动获得：
 
-- 项目结构和约束
-- 代码模式参考
-- 控件使用方法
-- 生命周期事件说明
+- 项目结构和关键约束
+- 代码模式参考、控件使用方法、生命周期事件说明
+- 官方 API 原文（`表单开发API/`）的查询路由
 
 **示例对话**：
 
 ```
-用户：参考 AGENTS.md 文档，帮我在custom.ts实现一个功能，当金额超过 10000 时，自动显示审批人字段
+用户：帮我在custom.ts实现一个功能，当金额超过 10000 时，自动显示审批人字段
 
-AI：（自动读取 AGENTS.md，生成代码）
+AI：（AGENTS.md 与 skill 已在上下文中，按项目约束生成代码）
 form.on('onRendered', function(data) {
     this.amount.valueChange.subscribe(function(change) {
         if (change.value > 10000) {
@@ -251,11 +250,13 @@ cloudpivot-js-help/
 │   ├── controls.d.ts       # 控件类型
 │   ├── form-instance.d.ts  # 表单实例类型
 │   └── lifecycle.d.ts      # 生命周期类型
+├── .agents/skills/
+│   └── cloudpivot-form-dev/ # AI 二开 skill（代码模式、控件清单、API 路由）
 ├── 表单开发API/            # 官方 API 文档
 ├── scripts/
 │   ├── extract.mjs         # 完整生成脚本
 │   └── refresh-types.mjs   # 类型刷新脚本
-└── AGENTS.md               # AI Agent 指引文档
+└── AGENTS.md               # AI Agent 指引文档（被 AI 工具自动载入）
 ```
 
 ---
@@ -331,7 +332,7 @@ A: 云枢平台支持 IE。在 `onRendered` 中不要用箭头函数，使用 `f
 ## 参考资源
 
 - **API 文档**：`表单开发API/` 目录
-- **代码模式**：`AGENTS.md` 文件
+- **AI 指引与代码模式**：`AGENTS.md` + `.agents/skills/cloudpivot-form-dev/`
 - **类型定义**：`types/` 目录
 
 ---
