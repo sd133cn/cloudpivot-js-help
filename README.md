@@ -1,6 +1,6 @@
 # 云枢表单脚手架
 
-用于云枢低代码表单自定义开发的 TypeScript 类型辅助工具，支持 VSCode 智能提示和 AI Agent 自动编程。
+用于奥哲云枢（Authine CloudPivot）低代码表单自定义开发的 TypeScript 类型辅助工具，支持 VSCode 智能提示和 AI Agent 自动编程。
 
 ## 功能特性
 
