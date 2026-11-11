@@ -284,10 +284,11 @@ this.sheetField.value = rows;
 
 ```javascript
 form.on('onRendered', function() {
+    var form = this; // subscribe 的 function 回调里 this 不是表单，先捕获
     this.relevanceForm.valueChange.subscribe(function(change) {
         if (change.value == null) { return; }
-        var closeLoading = this.$message.loading('加载中', 0);
-        var sheetField = this.sheetField;
+        var closeLoading = form.$message.loading('加载中', 0);
+        var sheetField = form.sheetField;
 
         // 取回源单据数据，例如从接口读回另一张表单的子表
         // getFormData 是业务侧自己封装的取数函数，非平台 API；第三个参数是源单据的模板编码

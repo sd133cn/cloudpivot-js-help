@@ -143,6 +143,19 @@ form.on('onRendered', function(data) {
 | 方法参数提示      | ✅ 显示参数类型和说明                           |
 | 类型错误提示      | ✅ 赋值类型错误会红色波浪线                        |
 
+#### 类型覆盖范围
+
+类型定义覆盖的是**运行时控件 API**（`value`、`display`、`required`、`edit`、各 `validate*` 校验方法、子表行列表方法等，见 `types/controls.d.ts`，与官方《3.表单控件API》的共有属性一一对应）。
+
+表单设计器里的「显示条件 / 必填条件 / 只读条件 / 计算规则 / 数据联动」属于**控件选项**（`displayFormula`、`requiredFormula`、`computeFormula` 等，官方《4.表单控件选项API》），随 `template.html` 导出为 `data-display-formula` 等属性透传到 `src/custom.html`，由平台在运行时解释生效，**不需要在 JS 二开中实现**（官方明确不建议运行时修改选项属性）。要在代码里做等价控制，用运行时属性：
+
+| 设计器配置 | 代码等价写法 |
+| ---- | ---- |
+| 显示条件 | `this.控件Key.display = true/false` |
+| 必填条件 | `this.控件Key.required = true/false` |
+| 只读条件 | `this.控件Key.edit = false` |
+| 数据联动 / 计算规则 | `this.控件Key.valueChange.subscribe(...)` 中赋值 |
+
 ---
 
 ### 场景二：AI Agent 自动编程
@@ -172,13 +185,14 @@ OpenCode、DeepSeek Harness 等工具会自动把项目根目录的 `AGENTS.md` 
 
 AI：（AGENTS.md 与 skill 已在上下文中，按项目约束生成代码）
 form.on('onRendered', function(data) {
-    this.amount.valueChange.subscribe(function(change) {
+    var form = this; // function 回调内 this 不指向表单，需先捕获
+    form.amount.valueChange.subscribe(function(change) {
         if (change.value > 10000) {
-            this.approver.display = true;
-            this.approver.required = true;
+            form.approver.display = true;
+            form.approver.required = true;
         } else {
-            this.approver.display = false;
-            this.approver.required = false;
+            form.approver.display = false;
+            form.approver.required = false;
         }
     });
 });
@@ -322,6 +336,10 @@ A:
 1. `src/custom.html` → 复制到云枢 HTML 编辑窗口
 2. `src/custom.css` → 复制到云枢 CSS 编辑窗口
 3. `src/custom.ts` → 编译为 JS → 复制到云枢 JS 编辑窗口
+
+### Q: 显示条件、必填、数据联动这些功能脚手架实现不了吗？
+
+A: 这些不需要脚手架实现。「显示条件 / 必填条件 / 数据联动」是表单设计器里的配置项，导出 `template.html` 时已带上（`data-display-formula`、`data-required-formula` 等属性），由云枢平台自己生效。脚手架和 AI Agent 做的是**运行时**控制：`display`、`required`、`edit`、`valueChange` 监听赋值，这些属性都有类型提示（见「类型覆盖范围」）。
 
 ### Q: 支持 IE 浏览器吗？
 
