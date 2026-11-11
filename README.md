@@ -159,7 +159,7 @@ form.on('onRendered', function(data) {
 
 **方式一：直接对话**（推荐）
 
-OpenCode、Trae 等工具会自动把项目根目录的 `AGENTS.md` 载入上下文，并按其中的指引加载 `cloudpivot-form-dev` skill，**对话时无需点名文件**。AI 会自动获得：
+OpenCode、DeepSeek Harness 等工具会自动把项目根目录的 `AGENTS.md` 载入上下文，并按其中的指引加载 `cloudpivot-form-dev` skill，**对话时无需点名文件**。AI 会自动获得：
 
 - 项目结构和关键约束
 - 代码模式参考、控件使用方法、生命周期事件说明
