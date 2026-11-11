@@ -72,8 +72,8 @@ npm install
 ### 第二步：导入云枢模板
 
 1. 在云枢平台设计表单
-2. 导出 HTML 模板，保存为 `template.html`（覆盖项目根目录的模板文件）
 
+2. 导出 HTML 模板，保存为 `template.html`（覆盖项目根目录的模板文件）
    ![云枢导出HTML模板位置示意](云枢导出html位置.png)
 
 ### 第三步：生成类型定义
@@ -150,9 +150,9 @@ form.on('onRendered', function(data) {
 #### 支持的 AI 工具
 
 - **OpenCode** - 推荐
-- **Trae** - 推荐
-- **Cursor**
-- **Claude Code**
+- **DeepSeek Harness** - 推荐
+- **Qoder**
+- **Zcode**
 - 其他支持项目文档的 AI 编程工具
 
 #### 使用方法
