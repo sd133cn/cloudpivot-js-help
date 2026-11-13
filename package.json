@@ -6,6 +6,7 @@
   "scripts": {
     "extract": "node scripts/extract.mjs",
     "refresh-types": "node scripts/refresh-types.mjs",
+    "validate-api": "node scripts/validate-webapi.mjs",
     "dev": "tsc --watch --noEmit"
   },
   "devDependencies": {

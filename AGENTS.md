@@ -21,6 +21,7 @@
 | 关键约束 1–11（违反即产出无效代码） | 本文件下方「关键约束」 | 每次改 `src/` 之前 |
 | 生命周期、控件取值、子表、按钮的写法 | skill `cloudpivot-form-dev` → `references/code-patterns.md` | 写 `custom.ts` 时 |
 | 控件标签与属性清单、容器/子表/标签页嵌套、自定义 HTML 区域 | skill `cloudpivot-form-dev` → `references/controls-html.md` | 改 `custom.html` 时 |
+| OpenWebAPI 平台接口（表单里拉其他单据列表、发起/审批流程、查组织） | skill `cloudpivot-form-dev` → `references/webapi.md`（原文 `OpenWebAPI/`） | 表单里用 axios 调平台接口时 |
 | 官方 API 原文（`表单开发API/` 路由表见 SKILL.md） | skill `cloudpivot-form-dev` | skill 参考未覆盖时 |
 
 **改 `src/custom.ts` 或 `src/custom.html` 之前，先用 skill 工具加载 `cloudpivot-form-dev`。**
@@ -255,17 +256,7 @@ npm run dev            # TypeScript 监听模式（仅类型检查）
 
 ## API 参考文档
 
-详细 API 文档位于 `表单开发API/`：
-
-| 文件 | 内容 |
-|------|------|
-| `1.表单开发Q&A.md` | 常见模式与示例 |
-| `2.表单生命周期API.md` | 生命周期事件详解 |
-| `3.表单控件API.md` | 控件属性与方法 |
-| `4.表单控件选项API.md` | 控件选项配置 |
-| `表单在线开发全局上下文变量（h3form）标准化属性及释义.md` | FormInstance 属性说明 |
-| `表单HTML二开-子表API扩展.md` | 子表扩展 API |
-| `使用说明-子表新增自定义按钮及事件挂载.md` | 子表自定义按钮 |
+官方 API 原文位于仓库根 `表单开发API/`（表单二开 JS 的唯一出处），OpenWebAPI 服务端接口原文位于 `OpenWebAPI/`。「查什么 → 读哪个文件」的路由表见 `.agents/skills/cloudpivot-form-dev/SKILL.md`「API 原文路由」一节，此处不再重复。
 
 ---
 

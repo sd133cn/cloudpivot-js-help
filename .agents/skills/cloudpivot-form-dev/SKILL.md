@@ -1,9 +1,11 @@
 ---
 name: cloudpivot-form-dev
-description: 云枢（CloudPivot）低代码表单二开写法：写或改 src/custom.ts 业务逻辑、在 src/custom.html 增改控件与容器/子表/标签页、挂生命周期事件（onLoad/onRendered/onValidate/onPreAction/onCustomAction）、做校验与按钮。
+description: 云枢（CloudPivot）低代码表单二开写法：写或改 src/custom.ts 业务逻辑、在 src/custom.html 增改控件与容器/子表/标签页、挂生命周期事件（onLoad/onRendered/onValidate/onPreAction/onCustomAction）、做校验与按钮；在表单里调用 OpenWebAPI 平台接口（拉其他单据列表、发起与审批流程、查组织人员）。
 ---
 
 本 skill 只装**按需查的写法**。约束的唯一出处是仓库根 `AGENTS.md`「关键约束」，此处不重复。
+
+语料基线：平台 **6.15.13**（`表单开发API/` 与 `OpenWebAPI/` 均导出于该版本）。平台升级后，先核对原文再信参考。
 
 ## 执行顺序
 
@@ -12,7 +14,8 @@ description: 云枢（CloudPivot）低代码表单二开写法：写或改 src/c
 3. 只打开当前这一步需要的参考：
    - 加控件、改 HTML 结构 → `references/controls-html.md`
    - 写 JS 逻辑 → `references/code-patterns.md`
-   - 参考未覆盖、或拿不准 API 的属性与语义 → 按下方「官方 API 原文路由」查原文
+   - 表单里跨单据/跨流程取数（拉其他单据列表、发起或审批流程、查组织人员）→ `references/webapi.md`
+   - 参考未覆盖、或拿不准 API 的属性与语义 → 按下方「API 原文路由」查原文
 4. 落笔后逐条对照 `AGENTS.md`「关键约束」自查，有一条不过就改掉再交付。
 
 ## 决策表
@@ -39,10 +42,11 @@ description: 云枢（CloudPivot）低代码表单二开写法：写或改 src/c
 | 提示 / 确认框 | `this.$message.success|error|loading` / `this.$confirm({...})` |
 | 代码里触发提交、暂存 | `this.doAction('submit'|'save')` / `this.submit()` |
 | 隐藏按钮 | 系统按钮在 `onLoad` 设 `visible=false`；自定义按钮在 `onRendered` 设 `actionController.visible=false` |
+| 表单里调云枢平台接口（拉其他单据列表、发起/审批流程、查组织） | `axios` + `config.apiHost`（`code-patterns.md`「HTTP 请求」范式）调 OpenWebAPI → `references/webapi.md`。带页面会话，不用管 token；请求体可先过 `npm run validate-api` |
 
-## 官方 API 原文路由
+## API 原文路由
 
-`表单开发API/` 在仓库根目录，是从平台导出的原文，API 的唯一出处——不要抄进 references：
+原文都在仓库根，是从平台导出的，API 的唯一出处——不要抄进 references：
 
 | 查什么 | 读哪个 |
 |---|---|
@@ -53,3 +57,5 @@ description: 云枢（CloudPivot）低代码表单二开写法：写或改 src/c
 | 子表扩展 API | `表单开发API/表单HTML二开-子表API扩展.md` |
 | 子表自定义按钮挂载 | `表单开发API/使用说明-子表新增自定义按钮及事件挂载.md` |
 | 冷门用法、报错语义 | `表单开发API/1.表单开发Q&A.md` |
+| OpenWebAPI 端点完整字段、枚举、schema | `OpenWebAPI/04_OpenWebAPI_OpenAPI.json`（grep 端点名或 schema 名） |
+| OpenWebAPI 端点的请求/响应示例 | `OpenWebAPI/04_OpenWebAPI.md`（按「## 端点名」定位「请求示例」） |
