@@ -6,6 +6,8 @@
 
 ## 生命周期事件
 
+> `form.on(事件, 处理函数, 'cover')` 的第三个参数：官方文档统一带 `'cover'` 但从未解释语义，照抄官方写法统一带上，不要省略。
+
 ### onLoad - 初始化数据/权限
 
 ```javascript
@@ -310,7 +312,7 @@ form.on('onRendered', function() {
             closeLoading();
         }).catch(function(err) {
             closeLoading();
-            this.$message.error('抓取数据失败，请刷新页面重试');
+            form.$message.error('抓取数据失败，请刷新页面重试');
             console.log('抓取数据失败:', err);
         });
     }.bind(this));
@@ -444,6 +446,8 @@ this.$confirm({
 ```
 
 ## HTTP 请求
+
+> 平台有一组表单可调用的 OpenWebAPI 接口（列表查询、发起/审批流程、组织人员等 22 个端点），就用这个 axios 范式调，带页面会话不用管 token——端点与请求体见 `references/webapi.md`。上面的 `/api/resource` 只是占位示例。
 
 ```javascript
 // 使用全局 axios

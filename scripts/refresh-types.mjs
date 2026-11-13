@@ -35,12 +35,14 @@ const CONTROL_TAG_MAP = {
   'a-user-multi-selector': 'StaffControl',
   'a-departmentselector': 'DeptControl',
   'a-departmentmultiselector': 'DeptControl',
-  'a-staffDeptMixed': 'StaffDeptMixedControl',
+  // 注意：查找前 tagName 已 toLowerCase()，映射键必须全小写
+  'a-staffdeptmixed': 'StaffDeptMixedControl',
   'a-sheet': 'SheetControl',
   'a-create-by': 'CreateByControl',
   'a-created-time': 'CreatedTimeControl',
   'a-sequence-no': 'SequenceNoControl',
   'a-relevance-form': 'RelevanceFormControl',
+  'a-association-form': 'RelevanceFormControl', // 平台实际导出的关联表单标签名
 };
 
 /**

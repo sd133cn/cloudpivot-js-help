@@ -4,6 +4,8 @@
 只在**新增或修改控件**时读。约束规则的唯一出处是仓库根 `AGENTS.md`。
 
 
+## 添加控件的两条路径
+
 **重要**：`src/custom.html` 由 `npm run extract` 从 `template.html` 生成，会被覆盖。要添加新控件：
 
 **方式一：完整更新（覆盖所有文件）**
@@ -71,6 +73,15 @@
 
 <!-- 地址 -->
 <a-location key="AddressXXXXXXXXXXXX" data-name="控件名称" data-span="24"></a-location>
+
+<!-- 关联表单（标签名是 a-association-form，不要写成 relevance-form） -->
+<a-association-form key="RelevanceFormXXXXXXXXXXXX" data-name="控件名称" data-span="24"
+                    data-schema-code="源表单编码" data-query-code="查询视图编码"
+                    data-display-field="源表单显示字段key" data-select-mode="dropdown"></a-association-form>
+
+<!-- ⚠️ 关联表单的完整属性集（data-schema-code / data-query-code / data-mappings /
+     data-conditions 等）由平台按源表单生成，手拼极易出错——
+     在云枢平台拖出来、导出模板、再复制。JS 侧取值格式见 code-patterns.md「关联表单 (type: 80)」。 -->
 
 <!-- 人员单选 -->
 <a-user-selector key="StaffSingleXXXXXXXXXXXX" data-name="控件名称" data-span="24" data-dept-visible="user" data-default-value="[]" data-org-root="[]"></a-user-selector>
@@ -311,6 +322,7 @@
 
 在 `custom.html` 中可添加自定义 HTML 元素（注意：会被 `npm run extract` 覆盖，需在生成后添加）：
 
+- 自定义 HTML 必须放在 `<section type="template" id="template">` 区域内（`<section id="toolbar">` 是另一个区域，只放 `<action>` 按钮）
 - `<a-row>` 表示一行，最多可有 4 个 `<a-col>` 子元素（列）
 - `<a-col>` 的**第一个子元素**不能使用 `class`（会被云枢移除）- 请使用 `id`
 - 从第二个子元素开始，可以使用 `class`
@@ -331,6 +343,30 @@
         <div class="my-area">
             ...
         </div>
+    </a-col>
+</a-row>
+```
+
+### 为自定义 HTML 绑事件
+
+在 `custom.ts` 的 `onRendered` 里用 `document.getElementById` 取元素绑事件，不要用内联 `onclick`——custom.ts 是 IIFE 包装的，内联 `onclick="show()"` 找不到 IIFE 里的函数（官方 Q&A 的内联 `<script>` 写法是旧平台示例，本项目不用；实在要用 `onclick`，必须显式 `window.show = show` 把函数挂到全局）：
+
+```javascript
+form.on('onRendered', function() {
+    var form = this; // 回调里 this 不是表单，先捕获
+    var btn = document.getElementById('my-custom-btn');
+    if (btn) {
+        btn.addEventListener('click', function() {
+            form.$message.success('被点击了');
+        });
+    }
+});
+```
+
+```html
+<a-row>
+    <a-col>
+        <button id="my-custom-btn">自定义按钮</button>
     </a-col>
 </a-row>
 ```
