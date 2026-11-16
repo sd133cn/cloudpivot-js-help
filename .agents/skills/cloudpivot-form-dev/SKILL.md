@@ -38,11 +38,13 @@ description: 云枢（CloudPivot）低代码表单二开写法：写或改 src/c
 | 取子表勾选行 | `getCheckedRows()` |
 | 监听控件变化 | `valueChange.subscribe` / `propertyChange.subscribe` |
 | 监听子表行列变化 | `rowChange` / `getRowValueChange(i)` / `getColumnValueChange(key)` |
-| 发 HTTP 请求 | 全局 `axios`，URL 前缀 `config.apiHost` |
+| 发 HTTP 请求 | 全局 `axios`；URL 前缀与响应层数规则的唯一出处是 `references/webapi.md`「通用契约」，别照 `表单开发API/` 里的 `config.apiHost` 示例拼平台接口 |
 | 提示 / 确认框 | `this.$message.success|error|loading` / `this.$confirm({...})` |
 | 代码里触发提交、暂存 | `this.doAction('submit'|'save')` / `this.submit()` |
 | 隐藏按钮 | 系统按钮在 `onLoad` 设 `visible=false`；自定义按钮在 `onRendered` 设 `actionController.visible=false` |
-| 表单里调云枢平台接口（拉其他单据列表、发起/审批流程、查组织） | `axios` + `config.apiHost`（`code-patterns.md`「HTTP 请求」范式）调 OpenWebAPI → `references/webapi.md`。带页面会话，不用管 token；请求体可先过 `npm run validate-api` |
+| 移动端自造的 Bottom Sheet / Action Sheet 底部被平台操作条盖住 | 打开浮层时用**内联** `display` 压掉 `.form-actions.form-foot`，关闭还原 → `references/code-patterns.md`「移动端浮层（Bottom Sheet / Action Sheet）」 |
+| 表单里调云枢平台接口（拉其他单据列表、发起/审批流程、查组织） | 页面全局 `axios` 直接调 OpenWebAPI 相对路径 `'/api/v2/...'` → `references/webapi.md`。带页面会话，不用管 token；**选人/日期等条件查询的 filters 写法照该文件「高频细节」（propertyType + 入参格式，给错整个请求被服务端拒）** |
+| 要某列**去重后的取值列表**（自造选择器与平台下拉同口径） | `POST /api/runtime/query/listSkipQueryList`，服务端去重、可带 `filters` 条件、条数不随该表增长 → `references/webapi.md`「拿某列去重后的选项」。**两条死路同节：`groupByFields` 不去重、数据项下拉的 `items` 只是配置 JSON** |
 
 ## API 原文路由
 

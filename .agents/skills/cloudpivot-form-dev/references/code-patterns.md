@@ -423,6 +423,33 @@ this.doAction('save');    // 暂存
 this.submit();            // 提交的快捷方法
 ```
 
+## 移动端浮层（Bottom Sheet / Action Sheet）
+
+> 官方 `表单开发API/` 没有这一条，是 6.15.13 手机端实测（iOS Edge / 钉钉内置浏览器）；PC 端不复现，别拿 PC 表现下结论。
+
+自造的 `position: fixed` 下弹抽屉在 PC 上盖得好好的，到手机端**面板最底下那一排按钮点不到了**——被平台渲染的底部操作条 `.form-actions.form-foot`（提交 / 同意 / 暂存 那条）压在下面：移动端平台把这条也渲染成 `fixed; bottom:0`，层叠顺序上赢过表单内容里的蒙层。PC 端它要么不固定、要么层级更低。**这是平台移动端的固有行为，不是你的 CSS 写错了**，任何 fixed 底部浮层都会碰到。
+
+### 打开浮层时压掉平台底部操作条
+
+不要在 `custom.css` 里写 `.form-actions.form-foot { display:none }`：那是平台元素（约束 2、3），同权重谁赢看样式表加载顺序，而且这条会一直生效、把提交按钮永久藏掉。改成开关浮层时写**内联样式**——内联优先于任何样式表，且只活在浮层打开期间：
+
+```javascript
+// formInst = onRendered 里捕获的 this
+function toggleFormFoot(hide) {
+    if (formInst && formInst.isMobile === false) return; // PC 上不遮，保持原样
+    var nodes = document.querySelectorAll('.form-actions.form-foot');
+    for (var i = 0; i < nodes.length; i++) { nodes[i].style.display = hide ? 'none' : ''; }
+}
+// 打开：mask.classList.add('is-open'); toggleFormFoot(true);
+// 关闭：mask.classList.remove('is-open'); toggleFormFoot(false);
+```
+
+只动 `display` 这一个属性；每个关闭分支（取消、保存、点蒙层、切月份）都要还原，否则用户关掉浮层找不到提交按钮。（本仓库 tsc 把 `querySelectorAll` 收窄成 `Element`，取 `.style` 前过一层 `asAny()`。）
+
+iPhone 上还有一截：面板底部留安全区，`padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px))`，否则按钮被底部小白条压住。
+
+压掉后仍被盖 = 蒙层的某个祖先带 `transform` / `filter` / `will-change` / `position`+`z-index` 自成一层叠上下文，`z-index` 抬多高都没用；那时把蒙层临时挂到 `document.body`，关闭再挂回原位（记得浮层样式别写成容器内选择器，挂出去会失效）。
+
 ## UI 消息提示
 
 ```javascript
