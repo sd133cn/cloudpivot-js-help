@@ -202,6 +202,8 @@ npm run dev            # TypeScript 监听模式（仅类型检查）
 | `npm run refresh-types` | 仅更新类型定义 | 仅覆盖 custom-types.d.ts，更新 custom.js 注释（保留用户代码） |
 | `npm run dev` | 类型检查监听 | 不修改文件 |
 
+**`template.html` 的来源**：云枢平台自带的「导出」按钮只产出控件 HTML，`<style>` 与 `<script id="customScript">` 是硬编码默认值、自定义 HTML 区域没有插槽，即平台导出会丢掉表单里已写的自定义 CSS/JS/HTML。装 `scripts/cloudpivot-template-export.user.js`（油猴）后，表单设计页工具条「导出」图标左边会出现「本地模板」按钮，点一下产出带这三块内容的 `template.html`，直接覆盖根目录的 `template.html` 再 `npm run extract`。
+
 **典型工作流**：
 
 ```
