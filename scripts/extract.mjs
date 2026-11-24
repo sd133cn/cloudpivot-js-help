@@ -333,38 +333,25 @@ function generateCustomTs(jsContent, topLevelControls, sheetControls) {
 
 // 检查是否只有模板代码
 let existingCode = '';
-const defaultCode = `form.on('onLoad', function(data, dataPermission) {
-  // 数据加载后，渲染之前
-  // this 指向 Window & FormInstance & FormControls
-  // data 和 dataPermission 的键为控件编码
-  // 示例: data.ShortText1775207152511 = 'txt';
-}, 'cover');
-
-form.on('onRendered', function(data) {
-  // 渲染完成后，可以访问控件
-  // this 指向 FormInstance & FormControls
-  // data 为表单数据
-  // 示例: this.ShortText1775207152511.value = 'hello';
-});
-
-form.on('onValidate', function(action, data) {
-  // 内置校验通过后
-  // return false 阻止提交
-});
-
-form.on('onPreAction', function(action, data) {
-  // 按钮事件执行前
-  // return false 阻止按钮操作
-});
-
-form.on('onCustomAction', function(action, data) {
-  // 自定义按钮事件
-  // if (action.code === 'btn1') { ... }
-});
-
-form.on('onActionDone', function(action, data, httpRes) {
-  // 按钮事件执行后
-});`;
+// 云枢平台默认结构（IIFE 内部），与平台导出表单的 <script id="customScript"> 保持一致
+const defaultCode = `    /**
+     * 事件绑定，form.on
+     * @param eventType 事件类型
+     * @params function 事件
+     * @param  cover    true, false 是否覆盖root的生命周期 默认不覆盖 
+     */
+    //数据加载后，渲染之前，this为window
+    form.on('onLoad',function(data, dataPermission, interceptConfig){},'cover');
+    //渲染完成后
+    form.on('onRendered',function(data){});
+    //内置校验完成后，返回false阻止提交
+    form.on('onValidate',function(action,data){});
+    //操作前（包含自定义按钮）执行，返回false阻止按钮操作
+    form.on('onPreAction',function(action,data){});
+    //自定义按钮执行
+    form.on('onCustomAction',function(action,data){});
+    //操作完成后执行
+    form.on('onActionDone',function(action,data,httpRes){});`;
 
 if (jsContent) {
   const hasRealCode = jsContent.replace(/\/\*[\s\S]*?\*\//g, '')
@@ -398,8 +385,17 @@ ${controlComments}${sheetComments}
 */
 
 // ========== 以下代码复制到云枢 JS 窗口 ==========
-// ========== 生命周期事件 ==========
+/**
+ * 用户自定义JS区域;
+ * 注：外部链接的JS统一放置在HTML中，原有script标签下的js统一放置在当前编码区域
+ */
+/**
+ * 事件绑定，form.on
+ * @param {FormBase<FormControls>} form 表单生命周期注册对象
+ */
+(function(form){
 ${existingCode || defaultCode}
+})
 `;
 }
 
