@@ -19,13 +19,13 @@
 | 内容 | 位置 | 何时读 |
 |------|------|--------|
 | 关键约束 1–11（违反即产出无效代码） | 本文件下方「关键约束」 | 每次改 `src/` 之前 |
-| 生命周期、控件取值、子表、按钮的写法 | skill `cloudpivot-form-dev` → `references/code-patterns.md` | 写 `custom.ts` 时 |
+| 生命周期、控件取值、子表、按钮的写法 | skill `cloudpivot-form-dev` → `references/code-patterns.md` | 写 `custom.js` 时 |
 | 控件标签与属性清单、容器/子表/标签页嵌套、自定义 HTML 区域 | skill `cloudpivot-form-dev` → `references/controls-html.md` | 改 `custom.html` 时 |
 | OpenWebAPI 平台接口（表单里拉其他单据列表、发起/审批流程、查组织） | skill `cloudpivot-form-dev` → `references/webapi.md`（原文 `OpenWebAPI/`） | 表单里用 axios 调平台接口时 |
 | 第三方客户端 OpenAPI（外部系统 token 鉴权连云枢：表单数据增删改查、发起/审批流程、组织反查、事件订阅） | skill `cloudpivot-openapi`（原文 `OpenAPI/`） | 写表单之外的外部集成代码时 |
 | 官方 API 原文（`表单开发API/` 路由表见 SKILL.md） | skill `cloudpivot-form-dev` | skill 参考未覆盖时 |
 
-**改 `src/custom.ts` 或 `src/custom.html` 之前，先用 skill 工具加载 `cloudpivot-form-dev`。**
+**改 `src/custom.js` 或 `src/custom.html` 之前，先用 skill 工具加载 `cloudpivot-form-dev`。**
 
 ---
 
@@ -34,11 +34,11 @@
 首次进入项目按此顺序：
 
 1. 确认根目录有 `template.html`（从云枢平台导出的表单模板）。没有就提示用户去导出，不要自己编造。
-2. `npm run extract` — 从 `template.html` 生成 `src/custom.html`、`src/custom.css`、`src/custom.ts`、`src/custom-types.d.ts`。
+2. `npm run extract` — 从 `template.html` 生成 `src/custom.html`、`src/custom.css`、`src/custom.js`、`src/custom-types.d.ts`。
 3. 在 `src/custom.html` 里增改控件。**绝不修改 `template.html`。**
-4. `npm run refresh-types` — 按新控件更新类型定义，保留 `custom.ts` / `custom.css` 里的用户代码。
-5. 编辑 `src/custom.ts` 写业务逻辑、`src/custom.css` 加样式（先加载 `cloudpivot-form-dev`）。
-6. 三份文件分别复制到云枢对应编辑窗口：`custom.html` → HTML，`custom.css` → CSS，`custom.ts` → JS。
+4. `npm run refresh-types` — 按新控件更新类型定义，保留 `custom.js` / `custom.css` 里的用户代码。
+5. 编辑 `src/custom.js` 写业务逻辑、`src/custom.css` 加样式（先加载 `cloudpivot-form-dev`）。
+6. 三份文件分别复制到云枢对应编辑窗口：`custom.html` → HTML，`custom.css` → CSS，`custom.js` → JS。
 
 `template.html` 只读；`src/custom.html` 是二次开发工作区；`npm run refresh-types` 不会覆盖用户代码。
 
@@ -52,7 +52,7 @@
 
 ### 约束 1：控件 key 必须与 HTML 一致（重要！）
 
-- 编写 `custom.ts` 前，**必须先读取 `src/custom.html`** 获取所有控件的 `key` 属性
+- 编写 `custom.js` 前，**必须先读取 `src/custom.html`** 获取所有控件的 `key` 属性
 - 只能使用 HTML 中存在的控件 key，不得凭空编造
 - 每个控件的 `key` 是唯一标识（如 `textName`、`numberAge`、`sheetWorkHistory`）
 - 检查方法：在 `custom.html` 中搜索 `key="xxx"` 确认控件是否存在
@@ -190,7 +190,7 @@ a-text { color: #333; }          /* 无效 */
 
 ```
 npm run extract        # 从 template.html 完整生成（首次或模板更新时）
-npm run refresh-types  # 仅更新类型定义（保留 custom.ts/css 用户代码）
+npm run refresh-types  # 仅更新类型定义（保留 custom.js/css 用户代码）
 npm run dev            # TypeScript 监听模式（仅类型检查）
 ```
 
@@ -198,8 +198,8 @@ npm run dev            # TypeScript 监听模式（仅类型检查）
 
 | 脚本 | 用途 | 覆盖文件 |
 |------|------|----------|
-| `npm run extract` | 从 template.html 完整生成 | 全部覆盖（custom.html, custom.css, custom.ts, custom-types.d.ts） |
-| `npm run refresh-types` | 仅更新类型定义 | 仅覆盖 custom-types.d.ts，更新 custom.ts 注释（保留用户代码） |
+| `npm run extract` | 从 template.html 完整生成 | 全部覆盖（custom.html, custom.css, custom.js, custom-types.d.ts） |
+| `npm run refresh-types` | 仅更新类型定义 | 仅覆盖 custom-types.d.ts，更新 custom.js 注释（保留用户代码） |
 | `npm run dev` | 类型检查监听 | 不修改文件 |
 
 **典型工作流**：
@@ -208,14 +208,14 @@ npm run dev            # TypeScript 监听模式（仅类型检查）
 首次使用：
   1. npm install
   2. npm run extract          # 从 template.html 生成初始文件
-  3. 编辑 src/custom.ts       # 编写业务代码
+  3. 编辑 src/custom.js       # 编写业务代码
   4. npm run dev              # 开启类型检查
 
 模板更新后：
   1. 覆盖 template.html       # 从云枢平台导出新模板
-  2. npm run extract          # 重新生成（会覆盖 custom.ts/css！）
+  2. npm run extract          # 重新生成（会覆盖 custom.js/css！）
 
-如果已编辑 custom.ts/css，只更新类型：
+如果已编辑 custom.js/css，只更新类型：
   1. 编辑 src/custom.html     # 手动添加新控件
   2. npm run refresh-types    # 更新类型，保留用户代码
 ```
@@ -230,12 +230,12 @@ npm run dev            # TypeScript 监听模式（仅类型检查）
 |------|------|-----------|
 | `src/custom.html` | HTML 模板片段 | HTML 编辑窗口 |
 | `src/custom.css` | CSS 样式 | CSS 编辑窗口 |
-| `src/custom.ts` | JavaScript 代码（含类型提示注释） | 直接复制到 JS 编辑窗口 |
+| `src/custom.js` | JavaScript 代码（含类型提示注释） | 直接复制到 JS 编辑窗口 |
 | `src/custom-types.d.ts` | 类型定义（仅开发时使用） | - |
 
-**⚠️ 重要：`custom.ts` 文件只能写 JavaScript 语法！**
+**⚠️ 重要：`custom.js` 文件只能写 JavaScript 语法！**
 
-虽然文件扩展名是 `.ts`，但代码内容必须是纯 JavaScript，不能使用 TypeScript 语法：
+代码内容必须是纯 JavaScript，不能使用 TypeScript 语法：
 
 | ❌ 禁止使用 | ✅ 正确写法 |
 |-----------|-----------|
@@ -246,12 +246,12 @@ npm run dev            # TypeScript 监听模式（仅类型检查）
 | `type Xxx = ...` | 不使用类型别名 |
 | `const x: string` | `var x` 或 `let x` |
 
-**为什么用 `.ts` 扩展名？**
-- 用于 VSCode 识别三斜线指令 `/// <reference path="..." />`
-- 获得 `custom-types.d.ts` 的类型提示支持
-- 本地开发时有智能补全
+**为什么用 `.js` 扩展名？**
+- 云枢平台运行的就是纯 JavaScript，复制到 JS 编辑窗口即可
+- TypeScript 只在 `.js` 文件中识别 JSDoc 类型注释（tsconfig 已开启 `allowJs` + `checkJs`）；`.ts` 文件会**忽略** JSDoc，补全失效
+- `.js` 中同样识别三斜线指令 `/// <reference path="custom-types.d.ts" />`，获得 `custom-types.d.ts` 的类型提示与智能补全
 
-**部署到云枢时**：直接复制 `custom.ts` 内容到 JS 编辑窗口即可，无需编译。
+**部署到云枢时**：直接复制 `custom.js` 内容到 JS 编辑窗口即可，无需编译。
 
 ---
 
@@ -269,7 +269,7 @@ types/           # 静态类型定义 (controls.d.ts, form-instance.d.ts, lifecy
 src/             # 生成的可编辑文件
   custom.html    # HTML 片段
   custom.css     # CSS 样式
-  custom.ts      # TypeScript 代码
+  custom.js      # JavaScript 代码（checkJs 提供类型补全）
   custom-types.d.ts  # 自动生成的类型
 scripts/         # 构建工具 (extract.mjs) - Node.js ESM
 template.html    # 源表单模板（只读，来自云枢）
@@ -283,7 +283,7 @@ template.html    # 源表单模板（只读，来自云枢）
 此工具**不会**生成单个合并的 HTML 文件。用户需要手动复制：
 - `custom.html` → 云枢 HTML 编辑窗口
 - `custom.css` → 云枢 CSS 编辑窗口
-- 编译 `custom.ts` → 云枢 JS 编辑窗口
+- `custom.js` → 云枢 JS 编辑窗口（纯 JavaScript，无需编译）
 
 ---
 

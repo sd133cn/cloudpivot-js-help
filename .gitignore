@@ -26,4 +26,5 @@ template.html
 src/custom.html
 src/custom.css
 src/custom.ts
+src/custom.js
 src/custom-types.d.ts

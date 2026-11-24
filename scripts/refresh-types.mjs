@@ -2,13 +2,13 @@
  * 刷新类型脚本 - 只更新类型定义，不覆盖已有代码
  * 
  * 使用场景：
- * - 已经编辑了 custom.ts 或 custom.css
+ * - 已经编辑了 custom.js 或 custom.css
  * - 需要更新类型定义以匹配 custom.html 中的控件
  * 
  * 执行内容：
  * - 从 src/custom.html 解析控件
  * - 更新 src/custom-types.d.ts
- * - 更新 src/custom.ts 头部的控件注释（保留用户代码）
+ * - 更新 src/custom.js 头部的控件注释（保留用户代码）
  */
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
@@ -134,7 +134,7 @@ ${sheetTypes}
 }
 
 /**
- * 更新 custom.ts 的头部注释，保留用户代码
+ * 更新 custom.js 的头部注释，保留用户代码
  */
 function updateCustomTsHeader(existingContent, topLevelControls, sheetControls) {
   const typeNames = {
@@ -238,15 +238,15 @@ function main() {
   writeFileSync(join(srcDir, 'custom-types.d.ts'), customTypes, 'utf-8');
   console.log('\n✓ 已更新 src/custom-types.d.ts');
 
-  // 2. 更新 custom.ts 的头部注释（保留用户代码）
-  const customTsPath = join(srcDir, 'custom.ts');
-  if (existsSync(customTsPath)) {
-    const existingTs = readFileSync(customTsPath, 'utf-8');
-    const updatedTs = updateCustomTsHeader(existingTs, topLevelControls, sheetControls);
-    writeFileSync(customTsPath, updatedTs, 'utf-8');
-    console.log('✓ 已更新 src/custom.ts 的控件注释（保留用户代码）');
+  // 2. 更新 custom.js 的头部注释（保留用户代码）
+  const customJsPath = join(srcDir, 'custom.js');
+  if (existsSync(customJsPath)) {
+    const existingJs = readFileSync(customJsPath, 'utf-8');
+    const updatedJs = updateCustomTsHeader(existingJs, topLevelControls, sheetControls);
+    writeFileSync(customJsPath, updatedJs, 'utf-8');
+    console.log('✓ 已更新 src/custom.js 的控件注释（保留用户代码）');
   } else {
-    console.warn('⚠ src/custom.ts 不存在，跳过更新');
+    console.warn('⚠ src/custom.js 不存在，跳过更新');
   }
 
   // 3. 不更新 custom.css - 用户自己维护
@@ -256,7 +256,7 @@ function main() {
   console.log('========================================');
   console.log('更新的文件:');
   console.log('  src/custom-types.d.ts - 类型定义');
-  console.log('  src/custom.ts         - 控件注释（保留用户代码）');
+  console.log('  src/custom.js         - 控件注释（保留用户代码）');
   console.log('');
   console.log('未修改:');
   console.log('  src/custom.css        - 用户自己维护');

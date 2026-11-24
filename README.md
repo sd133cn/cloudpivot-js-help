@@ -86,7 +86,7 @@ npm run extract
 
 - `src/custom.html` - HTML 片段
 - `src/custom.css` - CSS 样式
-- `src/custom.ts` - TypeScript 代码（含类型提示）
+- `src/custom.js` - JavaScript 代码（checkJs 提供类型补全）
 - `src/custom-types.d.ts` - 类型定义
 
 ---
@@ -120,7 +120,7 @@ this.sheetField.getCell(    // 自动提示参数类型
 
 **生命周期模板**：
 
-在 `src/custom.ts` 中已预置生命周期模板，直接编写业务逻辑即可：
+在 `src/custom.js` 中已预置生命周期模板，直接编写业务逻辑即可：
 
 ```typescript
 form.on('onLoad', function(data, dataPermission) {
@@ -181,7 +181,7 @@ OpenCode、DeepSeek Harness 等工具会自动把项目根目录的 `AGENTS.md` 
 **示例对话**：
 
 ```
-用户：帮我在custom.ts实现一个功能，当金额超过 10000 时，自动显示审批人字段
+用户：帮我在custom.js实现一个功能，当金额超过 10000 时，自动显示审批人字段
 
 AI：（AGENTS.md 与 skill 已在上下文中，按项目约束生成代码）
 form.on('onRendered', function(data) {
@@ -220,7 +220,7 @@ form.on('onRendered', function(data) {
 │  1. npm install                 # 安装依赖                   │
 │  2. 覆盖 template.html          # 从云枢导出模板             │
 │  3. npm run extract             # 生成 src/ 文件             │
-│  4. 编辑 src/custom.ts          # 编写业务代码               │
+│  4. 编辑 src/custom.js          # 编写业务代码               │
 │  5. npm run dev                 # 开启类型检查               │
 │  6. 复制代码到云枢              # 部署到平台                  │
 └─────────────────────────────────────────────────────────────┘
@@ -229,7 +229,7 @@ form.on('onRendered', function(data) {
 │  模板更新后（会覆盖所有文件！）                                │
 ├─────────────────────────────────────────────────────────────┤
 │  1. 覆盖 template.html          # 从云枢导出新模板           │
-│  2. npm run extract             # 重新生成（覆盖 custom.ts）  │
+│  2. npm run extract             # 重新生成（覆盖 custom.js）  │
 └─────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────┐
@@ -258,7 +258,7 @@ cloudpivot-js-help/
 ├── src/
 │   ├── custom.html         # HTML 片段 → 复制到云枢 HTML 窗口
 │   ├── custom.css          # CSS 样式 → 复制到云枢 CSS 窗口
-│   ├── custom.ts           # TypeScript 代码 → 编译后复制到 JS 窗口
+│   ├── custom.js           # JavaScript 代码 → 直接复制到 JS 窗口
 │   └── custom-types.d.ts   # 类型定义（自动生成，勿编辑）
 ├── types/                  # 静态类型定义
 │   ├── controls.d.ts       # 控件类型
@@ -319,7 +319,7 @@ cloudpivot-js-help/
 
 ### Q: 控件 key 从哪里获取？
 
-A: 在云枢平台设计表单后，导出 HTML 模板，控件 key 在 HTML 标签的 `key` 属性中。运行 `npm run extract` 后，`custom.ts` 头部会列出所有可用控件。
+A: 在云枢平台设计表单后，导出 HTML 模板，控件 key 在 HTML 标签的 `key` 属性中。运行 `npm run extract` 后，`custom.js` 头部会列出所有可用控件。
 
 ### Q: 为什么 TypeScript 报错找不到类型？
 
@@ -327,7 +327,7 @@ A: 确保已运行 `npm run extract` 或 `npm run refresh-types` 生成类型定
 
 ### Q: 如何保留已写的代码不被覆盖？
 
-A: 使用 `npm run refresh-types` 命令，只更新类型定义，不覆盖用户代码。或者在运行 `npm run extract` 前备份 `custom.ts`。
+A: 使用 `npm run refresh-types` 命令，只更新类型定义，不覆盖用户代码。或者在运行 `npm run extract` 前备份 `custom.js`。
 
 ### Q: 最终代码怎么部署到云枢？
 
@@ -335,7 +335,7 @@ A:
 
 1. `src/custom.html` → 复制到云枢 HTML 编辑窗口
 2. `src/custom.css` → 复制到云枢 CSS 编辑窗口
-3. `src/custom.ts` → 编译为 JS → 复制到云枢 JS 编辑窗口
+3. `src/custom.js` → 复制到云枢 JS 编辑窗口（纯 JavaScript，无需编译）
 
 ### Q: 显示条件、必填、数据联动这些功能脚手架实现不了吗？
 

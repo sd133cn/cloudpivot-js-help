@@ -228,7 +228,7 @@ function generateCustomHtml(htmlContent, topLevelControls, sheetControls) {
   return `<!--
   云枢表单 HTML 模板
   
-  关联文件: custom.css, custom.ts
+  关联文件: custom.css, custom.js
   类型定义: custom-types.d.ts
   
   可用控件:
@@ -272,7 +272,7 @@ function generateCustomCss(cssContent) {
   return `/**
  * 云枢表单 CSS 样式
  * 
- * 关联文件: custom.html, custom.ts
+ * 关联文件: custom.html, custom.js
  * 
  * 使用说明:
  * - 复制此文件内容到云枢平台的 CSS 编辑窗口
@@ -285,7 +285,7 @@ ${cssContent || '/* 暂无样式 */'}
 }
 
 /**
- * 生成 custom.ts
+ * 生成 custom.js
  */
 function generateCustomTs(jsContent, topLevelControls, sheetControls) {
   const typeNames = {
@@ -389,11 +389,11 @@ ${controlComments}${sheetComments}
  * 用户自定义JS区域;
  * 注：外部链接的JS统一放置在HTML中，原有script标签下的js统一放置在当前编码区域
  */
-/**
+(/**
  * 事件绑定，form.on
  * @param {FormBase<FormControls>} form 表单生命周期注册对象
  */
-(function(form){
+function(form){
 ${existingCode || defaultCode}
 })
 `;
@@ -446,14 +446,14 @@ function main() {
   writeFileSync(join(srcDir, 'custom.css'), customCss, 'utf-8');
   console.log('✓ 已生成 src/custom.css');
 
-  // 4. 提取并生成 custom.ts
+  // 4. 提取并生成 custom.js（.js + checkJs 才能让 JSDoc 类型注释生效，.ts 文件会忽略 JSDoc）
   const jsContent = extractJs(html);
-  const customTsPath = join(srcDir, 'custom.ts');
+  const customJsPath = join(srcDir, 'custom.js');
   
-  // 总是重新生成 custom.ts（因为不再嵌入 HTML 注释）
+  // 总是重新生成 custom.js（因为不再嵌入 HTML 注释）
   const customTs = generateCustomTs(jsContent, topLevelControls, sheetControls);
-  writeFileSync(customTsPath, customTs, 'utf-8');
-  console.log('✓ 已生成 src/custom.ts');
+  writeFileSync(customJsPath, customTs, 'utf-8');
+  console.log('✓ 已生成 src/custom.js');
 
   console.log('\n========================================');
   console.log('提取完成！');
@@ -461,7 +461,7 @@ function main() {
   console.log('生成的文件:');
   console.log('  src/custom.html    - HTML 片段');
   console.log('  src/custom.css     - CSS 样式');
-  console.log('  src/custom.ts      - TypeScript 代码');
+  console.log('  src/custom.js      - JavaScript 代码（checkJs 提供类型补全）');
   console.log('  src/custom-types.d.ts - 类型定义');
   console.log('');
   console.log('使用方式:');
