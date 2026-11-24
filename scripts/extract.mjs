@@ -390,8 +390,8 @@ return `/// <reference path="../types/index.d.ts" />
  * 关联文件: custom.html, custom.css
  * 
  * 使用说明:
- * - 使用 tsc 编译此文件，或手动转换为 JS
- * - 复制编译后的 JS 代码到云枢平台的 JS 编辑窗口
+ * - 只用 JavaScript 语法编写：云枢不编译 TypeScript，类型注解会导致语法错误
+ * - 直接把本文件内容复制到云枢平台的 JS 编辑窗口，无需编译
  * 
  * 可用控件:
 ${controlComments}${sheetComments}

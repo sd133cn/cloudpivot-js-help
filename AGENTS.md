@@ -22,6 +22,7 @@
 | 生命周期、控件取值、子表、按钮的写法 | skill `cloudpivot-form-dev` → `references/code-patterns.md` | 写 `custom.ts` 时 |
 | 控件标签与属性清单、容器/子表/标签页嵌套、自定义 HTML 区域 | skill `cloudpivot-form-dev` → `references/controls-html.md` | 改 `custom.html` 时 |
 | OpenWebAPI 平台接口（表单里拉其他单据列表、发起/审批流程、查组织） | skill `cloudpivot-form-dev` → `references/webapi.md`（原文 `OpenWebAPI/`） | 表单里用 axios 调平台接口时 |
+| 第三方客户端 OpenAPI（外部系统 token 鉴权连云枢：表单数据增删改查、发起/审批流程、组织反查、事件订阅） | skill `cloudpivot-openapi`（原文 `OpenAPI/`） | 写表单之外的外部集成代码时 |
 | 官方 API 原文（`表单开发API/` 路由表见 SKILL.md） | skill `cloudpivot-form-dev` | skill 参考未覆盖时 |
 
 **改 `src/custom.ts` 或 `src/custom.html` 之前，先用 skill 工具加载 `cloudpivot-form-dev`。**

@@ -370,3 +370,32 @@ form.on('onRendered', function() {
     </a-col>
 </a-row>
 ```
+
+## 引入外部 JS 库
+
+UMD 库（Flatpickr / ECharts / Tom Select / jQuery 这类挂全局的）**外链直接写进 `custom.html`**，不要用 JS 动态注入 `<script>`。依据是平台自己导出模板里的注释（`template.html` 中 `<script id="customScript">` 正上方）：
+
+> 外部链接的JS统一放置在HTML中，原有script标签下的js统一放置在当前编码区域
+
+即两个窗口的分工：外链 `<script src>` 归 HTML 窗口，内联代码归 JS 窗口。跨源外链在线上实测能加载并执行（页面无 CSP）。
+
+```html
+<!-- custom.html：外链放这里 -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+```
+
+```javascript
+// custom.ts：全局在 onRendered 里取，且先判断再降级
+form.on('onRendered', function () {
+    if (!window.flatpickr) return;          // 外链没到位时降级，别直接调用
+    window.flatpickr(document.getElementById('my-date-input'));
+});
+```
+
+- **只在 `onRendered` 及之后用**（已验）。`onLoad` 时外链是否就绪**未验**，别在 `onLoad` 里碰全局。
+- **失败是静默的**：外链到不了不会报错、没有事件，全局就是 `undefined`，第一个调用点 TypeError。用前判空 + 降级路径。
+- **必须 https**：页面是 https，`http:` 外链被静默丢弃。
+- **可达性看用户位置**：车间网络 / 钉钉 webview 能不能到那个 CDN，办公室 QA 复现不了。上生产前在目标网络验一次。
+- **别用 `import()` 拿 UMD**：UMD 产物不是 ESM，`import()` 拿到的 `default` 是 undefined，只能走外链 + 全局。真要用 ESM 包得换 ESM 分发（`esm.sh` / jsdelivr `+esm`）并动态 `import()`；`custom.ts` 里不能用静态 `import`/`export`。注意平台文档示例给的 `cdn.skypack.dev` 已不可用。
+
+**死路（别再试）**：HTML 窗口的 `<link rel="stylesheet">` 不生效——平台说明明确「HTML/CSS 窗口不支持引入外部样式表」。外部 CSS 只能在 `custom.ts` 里动态建 `link` 元素。

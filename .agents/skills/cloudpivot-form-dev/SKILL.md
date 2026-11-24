@@ -1,6 +1,7 @@
 ---
 name: cloudpivot-form-dev
 description: 云枢（CloudPivot）低代码表单二开写法：写或改 src/custom.ts 业务逻辑、在 src/custom.html 增改控件与容器/子表/标签页、挂生命周期事件（onLoad/onRendered/onValidate/onPreAction/onCustomAction）、做校验与按钮；在表单里调用 OpenWebAPI 平台接口（拉其他单据列表、发起与审批流程、查组织人员）。
+
 ---
 
 本 skill 只装**按需查的写法**。约束的唯一出处是仓库根 `AGENTS.md`「关键约束」，此处不重复。
@@ -20,44 +21,46 @@ description: 云枢（CloudPivot）低代码表单二开写法：写或改 src/c
 
 ## 决策表
 
-| 要做的事 | 用什么 |
-|---|---|
-| 初始化表单数据 | `onLoad` 直接改 `data` 对象（渲染前） |
-| 初始化后设置控件值 | `onRendered` + `this.key.value` |
-| 修改数据权限 | `onLoad` 改 `dataPermission.key` 的 `e`/`v`/`r` |
-| 提交前校验 | `onValidate` 返回 `false` 阻止 |
-| 阻止按钮操作 | `onPreAction` 返回 `false` |
-| 表单自定义按钮 | HTML `<action text code>` + `onCustomAction` |
-| 子表自定义按钮 | HTML `<a-sheet-action code text>` + `sheet.sheetActionDown(...)` |
-| 操作后处理 | `onActionDone` 检查 `httpRes` |
-| 子表增删行 | `appendRow` / `appendRows` / `insertRow(s)` / `removeRow(s)` / `removeAllRow` |
-| 子表读写单元格 | `getCell(row, colOrKey)` / `rows[i].value` |
-| **直接改子表数据对象**（`value = rows`、`onLoad` 里改 `data.sheetKey`） | **必须自己设 `rowStatus`**：`Added`/`Modified`/`Deleted`/`Unchange`（走控件 API 才由平台维护）→ `references/code-patterns.md`「子表行状态 rowStatus」 |
-| 只改子表里少数几行 | 别整表重建：取回行、改字段、该行 `rowStatus='Modified'`（删除标 `'Deleted'`、新增标 `'Added'`），其余不动 |
-| 用 API 或别处读回的子表数据整表替换 | **先逐行 `delete` 掉 `id`/`parentId`/`rowStatus`/`version` 再赋**——带着源单据的状态赋值不生效 |
-| 取子表勾选行 | `getCheckedRows()` |
-| 监听控件变化 | `valueChange.subscribe` / `propertyChange.subscribe` |
-| 监听子表行列变化 | `rowChange` / `getRowValueChange(i)` / `getColumnValueChange(key)` |
-| 发 HTTP 请求 | 全局 `axios`；URL 前缀与响应层数规则的唯一出处是 `references/webapi.md`「通用契约」，别照 `表单开发API/` 里的 `config.apiHost` 示例拼平台接口 |
-| 提示 / 确认框 | `this.$message.success|error|loading` / `this.$confirm({...})` |
-| 代码里触发提交、暂存 | `this.doAction('submit'|'save')` / `this.submit()` |
-| 隐藏按钮 | 系统按钮在 `onLoad` 设 `visible=false`；自定义按钮在 `onRendered` 设 `actionController.visible=false` |
-| 移动端自造的 Bottom Sheet / Action Sheet 底部被平台操作条盖住 | 打开浮层时用**内联** `display` 压掉 `.form-actions.form-foot`，关闭还原 → `references/code-patterns.md`「移动端浮层（Bottom Sheet / Action Sheet）」 |
-| 表单里调云枢平台接口（拉其他单据列表、发起/审批流程、查组织） | 页面全局 `axios` 直接调 OpenWebAPI 相对路径 `'/api/v2/...'` → `references/webapi.md`。带页面会话，不用管 token；**选人/日期等条件查询的 filters 写法照该文件「高频细节」（propertyType + 入参格式，给错整个请求被服务端拒）** |
-| 要某列**去重后的取值列表**（自造选择器与平台下拉同口径） | `POST /api/runtime/query/listSkipQueryList`，服务端去重、可带 `filters` 条件、条数不随该表增长 → `references/webapi.md`「拿某列去重后的选项」。**两条死路同节：`groupByFields` 不去重、数据项下拉的 `items` 只是配置 JSON** |
+| 要做的事                                                                                  | 用什么                                                                                                                                                                           |
+| ------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 初始化表单数据                                                                               | `onLoad` 直接改 `data` 对象（渲染前）                                                                                                                                                   |
+| 初始化后设置控件值                                                                             | `onRendered` + `this.key.value`                                                                                                                                               |
+| 修改数据权限                                                                                | `onLoad` 改 `dataPermission.key` 的 `e`/`v`/`r`                                                                                                                                 |
+| 提交前校验                                                                                 | `onValidate` 返回 `false` 阻止                                                                                                                                                    |
+| 阻止按钮操作                                                                                | `onPreAction` 返回 `false`                                                                                                                                                      |
+| 表单自定义按钮                                                                               | HTML `<action text code>` + `onCustomAction`                                                                                                                                  |
+| 子表自定义按钮                                                                               | HTML `<a-sheet-action code text>` + `sheet.sheetActionDown(...)`                                                                                                              |
+| 操作后处理                                                                                 | `onActionDone` 检查 `httpRes`                                                                                                                                                   |
+| 子表增删行                                                                                 | `appendRow` / `appendRows` / `insertRow(s)` / `removeRow(s)` / `removeAllRow`                                                                                                 |
+| 子表读写单元格                                                                               | `getCell(row, colOrKey)` / `rows[i].value`                                                                                                                                    |
+| **直接改子表数据对象**（`value = rows`、`onLoad` 里改 `data.sheetKey`） | **必须自己设 `rowStatus`**：`Added`/`Modified`/`Deleted`/`Unchange`（走控件 API 才由平台维护）→ `references/code-patterns.md`「子表行状态 rowStatus」                                                 |
+| 只改子表里少数几行                                                                             | 别整表重建：取回行、改字段、该行 `rowStatus='Modified'`（删除标 `'Deleted'`、新增标 `'Added'`），其余不动                                                                                                   |
+| 用 API 或别处读回的子表数据整表替换                                                                  | **先逐行 `delete` 掉 `id`/`parentId`/`rowStatus`/`version` 再赋**——带着源单据的状态赋值不生效                                                                                                    |
+| 取子表勾选行                                                                                | `getCheckedRows()`                                                                                                                                                            |
+| 监听控件变化                                                                                | `valueChange.subscribe` / `propertyChange.subscribe`                                                                                                                          |
+| 监听子表行列变化                                                                              | `rowChange` / `getRowValueChange(i)` / `getColumnValueChange(key)`                                                                                                            |
+| 发 HTTP 请求                                                                             | 全局 `axios`；URL 前缀与响应层数规则的唯一出处是 `references/webapi.md`「通用契约」，别照 `表单开发API/` 里的 `config.apiHost` 示例拼平台接口                                                                         |
+| 提示 / 确认框                                                                              | `this.$message.success                                                                                                                                                        |
+| 代码里触发提交、暂存                                                                            | `this.doAction('submit'                                                                                                                                                       |
+| 隐藏按钮                                                                                  | 系统按钮在 `onLoad` 设 `visible=false`；自定义按钮在 `onRendered` 设 `actionController.visible=false`                                                                                       |
+| 移动端自造的 Bottom Sheet / Action Sheet 底部被平台操作条盖住                                         | 打开浮层时用**内联** `display` 压掉 `.form-actions.form-foot`，关闭还原 → `references/code-patterns.md`「移动端浮层（Bottom Sheet / Action Sheet）」                                                  |
+| 表单里调云枢平台接口（拉其他单据列表、发起/审批流程、查组织）                                                       | 页面全局 `axios` 直接调 OpenWebAPI 相对路径 `'/api/v2/...'` → `references/webapi.md`。带页面会话，不用管 token；**选人/日期等条件查询的 filters 写法照该文件「高频细节」（propertyType + 入参格式，给错整个请求被服务端拒）**               |
+| 要某列**去重后的取值列表**（自造选择器与平台下拉同口径）                                                        | `POST /api/runtime/query/listSkipQueryList`，服务端去重、可带 `filters` 条件、条数不随该表增长 → `references/webapi.md`「拿某列去重后的选项」。**两条死路同节：`groupByFields` 不去重、数据项下拉的 `items` 只是配置 JSON**        |
+| 用外部 JS 库（UMD：Flatpickr / ECharts / Tom Select 等挂全局的）                                  | 外链 `<script src>` **直接写进 `custom.html`**，全局在 `onRendered` 里判空后用 → `references/controls-html.md`「引入外部 JS 库」。**死路：别用 JS 注入 script、别 `import()` UMD、HTML 窗口的 `<link>` 外部样式表不生效** |
+| 自造控件长什么样（控件目录与变体/状态、组合规则、式样 token、探针验收）、把控件搬到别的表单                                     | 归 skill `cloudpivot-ui-controls`——本 skill 只管跟平台对话，不管外观                                                                                                                        |
 
 ## API 原文路由
 
 原文都在仓库根，是从平台导出的，API 的唯一出处——不要抄进 references：
 
-| 查什么 | 读哪个 |
-|---|---|
-| 生命周期事件的完整参数与时序 | `表单开发API/2.表单生命周期API.md` |
-| 控件属性、方法、事件名 | `表单开发API/3.表单控件API.md` |
-| 下拉/单选等选项配置 | `表单开发API/4.表单控件选项API.md` |
-| `h3form` 全局变量（config、userInfo 等） | `表单开发API/表单在线开发全局上下文变量（h3form）标准化属性及释义.md` |
-| 子表扩展 API | `表单开发API/表单HTML二开-子表API扩展.md` |
-| 子表自定义按钮挂载 | `表单开发API/使用说明-子表新增自定义按钮及事件挂载.md` |
-| 冷门用法、报错语义 | `表单开发API/1.表单开发Q&A.md` |
-| OpenWebAPI 端点完整字段、枚举、schema | `OpenWebAPI/04_OpenWebAPI_OpenAPI.json`（grep 端点名或 schema 名） |
-| OpenWebAPI 端点的请求/响应示例 | `OpenWebAPI/04_OpenWebAPI.md`（按「## 端点名」定位「请求示例」） |
+| 查什么                              | 读哪个                                                         |
+| -------------------------------- | ----------------------------------------------------------- |
+| 生命周期事件的完整参数与时序                   | `表单开发API/2.表单生命周期API.md`                                    |
+| 控件属性、方法、事件名                      | `表单开发API/3.表单控件API.md`                                      |
+| 下拉/单选等选项配置                       | `表单开发API/4.表单控件选项API.md`                                    |
+| `h3form` 全局变量（config、userInfo 等） | `表单开发API/表单在线开发全局上下文变量（h3form）标准化属性及释义.md`                  |
+| 子表扩展 API                         | `表单开发API/表单HTML二开-子表API扩展.md`                               |
+| 子表自定义按钮挂载                        | `表单开发API/使用说明-子表新增自定义按钮及事件挂载.md`                            |
+| 冷门用法、报错语义                        | `表单开发API/1.表单开发Q&A.md`                                      |
+| OpenWebAPI 端点完整字段、枚举、schema      | `OpenWebAPI/04_OpenWebAPI_OpenAPI.json`（grep 端点名或 schema 名） |
+| OpenWebAPI 端点的请求/响应示例            | `OpenWebAPI/04_OpenWebAPI.md`（按「## 端点名」定位「请求示例」）            |
