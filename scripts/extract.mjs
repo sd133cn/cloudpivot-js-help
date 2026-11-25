@@ -1,6 +1,7 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
-import { join, dirname } from 'path';
+import { join, dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
+import { stripGeneratedCssHeader } from './css-header.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = join(__dirname, '..');
@@ -89,7 +90,7 @@ function extractControls(html) {
 function extractCss(html) {
   const styleRegex = /<style[^>]*>([\s\S]*?)<\/style>/i;
   const match = styleRegex.exec(html);
-  return match ? match[1].trim() : '';
+  return match ? stripGeneratedCssHeader(match[1].trim()) : '';
 }
 
 /**
@@ -126,6 +127,14 @@ function extractHtml(html) {
 }
 
 /**
+ * 只去掉首尾空行，保留首行缩进
+ * 用 trim() 会把首行的缩进一起吃掉，注释块的 /** 就会比后面的 * 少一级缩进
+ */
+function trimCodeLines(code) {
+  return code.replace(/^\s*\n+/, '').replace(/\s+$/, '');
+}
+
+/**
  * 提取 JS 内容（<script id="customScript"> 标签内部）
  */
 function extractJs(html) {
@@ -133,13 +142,16 @@ function extractJs(html) {
   const match = scriptRegex.exec(html);
   
   if (match && match[1]) {
-    let code = match[1].trim();
-    // 移除 IIFE 包装 (function(form){ ... })
-    const iifeMatch = /\(function\s*\(\s*form\s*\)\s*\{([\s\S]*)\}\s*\)/i.exec(code);
+    let code = trimCodeLines(match[1]);
+    // 移除 IIFE 包装 (function(form){ ... })，括号与 function 之间允许夹 JSDoc 注释
+    const iifeMatch = /\(\s*(?:\/\*[\s\S]*?\*\/\s*)?function\s*\(\s*form\s*\)\s*\{([\s\S]*)\}\s*\)/i.exec(code);
     if (iifeMatch) {
-      code = iifeMatch[1].trim();
+      code = trimCodeLines(iifeMatch[1]);
     }
-    return code;
+    // 剥掉旧版 generateCustomTs 写过的「已有的代码」包装
+    return trimCodeLines(code
+      .replace(/^\/\/ =+ 已有的代码 =+\s*\n/, '')
+      .replace(/\n\s*\/\/ =+ 已有代码结束 =+\s*$/, ''));
   }
   
   return '';
@@ -354,18 +366,12 @@ const defaultCode = `    /**
     form.on('onActionDone',function(action,data,httpRes){});`;
 
 if (jsContent) {
-  const hasRealCode = jsContent.replace(/\/\*[\s\S]*?\*\//g, '')
-                               .replace(/\/\/.*$/gm, '')
-                               .replace(/form\s*\.\s*on\s*\(\s*['"]\w+['"]\s*,\s*function\s*\([^)]*\)\s*\{[^}]*\}\s*(,\s*['"]\w+['"])?\s*\)\s*;?/gi, '')
-                               .replace(/[{}();\s]/g, '').trim().length > 5;
-  
-  if (hasRealCode) {
-    existingCode = `
-// ========== 已有的代码 ==========
-${jsContent}
-// ========== 已有代码结束 ==========
-`;
-  }
+  // 只与平台默认脚手架做确定性比对：内容不同就原样保留，
+  // 不能用「剥掉 form.on 后是否还剩字符」判断——事件体里的真实语句会被一起剥掉
+  const stripComments = (s) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
+  const hasRealCode = stripComments(jsContent).replace(/\s+/g, '') !== stripComments(defaultCode).replace(/\s+/g, '');
+
+  if (hasRealCode) existingCode = jsContent;
 }
 
 return `/// <reference path="../types/index.d.ts" />
@@ -399,15 +405,28 @@ ${existingCode || defaultCode}
 `;
 }
 
+/**
+ * 解析目标文件：默认根目录 template.html，也可传导出文件或 dist 导入文件的路径
+ */
+function resolveTemplatePath() {
+  const arg = process.argv.slice(2).find((a) => !a.startsWith('--'));
+  return arg ? resolve(rootDir, arg) : join(rootDir, 'template.html');
+}
+
 function main() {
-  const templatePath = join(rootDir, 'template.html');
+  const templatePath = resolveTemplatePath();
 
   if (!existsSync(templatePath)) {
-    console.error('错误: 找不到 template.html，请确保它位于项目根目录');
+    console.error(`错误: 找不到 ${templatePath}`);
+    console.error('用法: npm run extract [模板文件路径]，不传路径时默认根目录 template.html');
     process.exit(1);
   }
 
   const html = readFileSync(templatePath, 'utf-8');
+  console.log(`解析文件: ${templatePath}`);
+
+  const markedFormCode = /<!--cloudpivot-form-code:([^>]+?)-->/.exec(html);
+  console.log(`表单编码: ${markedFormCode ? markedFormCode[1].trim() : '(模板里没有编码标记)'}`);
 
   // 提取控件信息
   const { topLevelControls, sheetControls } = extractControls(html);
@@ -458,6 +477,7 @@ function main() {
   console.log('\n========================================');
   console.log('提取完成！');
   console.log('========================================');
+  console.log(`源文件: ${templatePath}`);
   console.log('生成的文件:');
   console.log('  src/custom.html    - HTML 片段');
   console.log('  src/custom.css     - CSS 样式');

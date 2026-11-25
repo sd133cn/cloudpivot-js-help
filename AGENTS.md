@@ -8,7 +8,10 @@
 
 这是一个 TypeScript 类型辅助工具，帮助开发者编写云枢（CloudPivot）低代码表单的自定义 JavaScript 代码。提供 VSCode 智能提示，支持表单控件、生命周期事件和 API。
 
-**输出产物**：生成 3 个独立文件（HTML、CSS、JS），可分别复制到云枢平台的对应编辑窗口。
+**输出产物**：
+
+- 开发用 3 个文件（`src/custom.html`、`src/custom.css`、`src/custom.js`），可分别复制到云枢平台的对应编辑窗口；
+- 导入用 1 个文件（`dist/template-<表单编码>-import.html`），由 `npm run build-import` 合并生成，用于在云枢「在线开发」视图一次导入。
 
 ---
 
@@ -21,9 +24,9 @@
 | 关键约束 1–11（违反即产出无效代码） | 本文件下方「关键约束」 | 每次改 `src/` 之前 |
 | 生命周期、控件取值、子表、按钮的写法 | skill `cloudpivot-form-dev` → `references/code-patterns.md` | 写 `custom.js` 时 |
 | 控件标签与属性清单、容器/子表/标签页嵌套、自定义 HTML 区域 | skill `cloudpivot-form-dev` → `references/controls-html.md` | 改 `custom.html` 时 |
-| OpenWebAPI 平台接口（表单里拉其他单据列表、发起/审批流程、查组织） | skill `cloudpivot-form-dev` → `references/webapi.md`（原文 `OpenWebAPI/`） | 表单里用 axios 调平台接口时 |
-| 第三方客户端 OpenAPI（外部系统 token 鉴权连云枢：表单数据增删改查、发起/审批流程、组织反查、事件订阅） | skill `cloudpivot-openapi`（原文 `OpenAPI/`） | 写表单之外的外部集成代码时 |
-| 官方 API 原文（`表单开发API/` 路由表见 SKILL.md） | skill `cloudpivot-form-dev` | skill 参考未覆盖时 |
+| OpenWebAPI 平台接口（表单里拉其他单据列表、发起/审批流程、查组织） | skill `cloudpivot-form-dev` → `references/webapi.md`（原文 `docs/openwebapi/`） | 表单里用 axios 调平台接口时 |
+| 第三方客户端 OpenAPI（外部系统 token 鉴权连云枢：表单数据增删改查、发起/审批流程、组织反查、事件订阅） | skill `cloudpivot-openapi`（原文 `docs/openapi/`） | 写表单之外的外部集成代码时 |
+| 官方 API 原文（`docs/form-api/` 路由表见 SKILL.md） | skill `cloudpivot-form-dev` | skill 参考未覆盖时 |
 
 **改 `src/custom.js` 或 `src/custom.html` 之前，先用 skill 工具加载 `cloudpivot-form-dev`。**
 
@@ -38,7 +41,9 @@
 3. 在 `src/custom.html` 里增改控件。**绝不修改 `template.html`。**
 4. `npm run refresh-types` — 按新控件更新类型定义，保留 `custom.js` / `custom.css` 里的用户代码。
 5. 编辑 `src/custom.js` 写业务逻辑、`src/custom.css` 加样式（先加载 `cloudpivot-form-dev`）。
-6. 三份文件分别复制到云枢对应编辑窗口：`custom.html` → HTML，`custom.css` → CSS，`custom.js` → JS。
+6. 回传云枢，两种方式任选其一：
+   - 三份文件分别复制到云枢对应编辑窗口：`custom.html` → HTML，`custom.css` → CSS，`custom.js` → JS；
+   - `npm run build-import` 生成 `dist/template-<表单编码>-import.html`，在「在线开发」视图一次导入（导入只更新草稿状态，仍需手动点「保存」）。
 
 `template.html` 只读；`src/custom.html` 是二次开发工作区；`npm run refresh-types` 不会覆盖用户代码。
 
@@ -190,7 +195,9 @@ a-text { color: #333; }          /* 无效 */
 
 ```
 npm run extract        # 从 template.html 完整生成（首次或模板更新时）
+npm run extract -- dist/template-MDL202611214110-import.html   # 也可直接解析导出文件/导入文件
 npm run refresh-types  # 仅更新类型定义（保留 custom.js/css 用户代码）
+npm run build-import   # 合并 src 三文件，生成 dist/template-<表单编码>-import.html
 npm run dev            # TypeScript 监听模式（仅类型检查）
 ```
 
@@ -198,11 +205,16 @@ npm run dev            # TypeScript 监听模式（仅类型检查）
 
 | 脚本 | 用途 | 覆盖文件 |
 |------|------|----------|
-| `npm run extract` | 从 template.html 完整生成 | 全部覆盖（custom.html, custom.css, custom.js, custom-types.d.ts） |
+| `npm run extract` | 从模板文件完整生成，可传路径 `npm run extract -- <文件>`（默认根目录 `template.html`，也可直接解析导出文件与 `dist` 导入文件） | 全部覆盖（custom.html, custom.css, custom.js, custom-types.d.ts） |
 | `npm run refresh-types` | 仅更新类型定义 | 仅覆盖 custom-types.d.ts，更新 custom.js 注释（保留用户代码） |
+| `npm run build-import` | 合并 src 三文件为导入用单文件 | 仅写 dist/，不改动 src/ 与 template.html |
 | `npm run dev` | 类型检查监听 | 不修改文件 |
 
-**`template.html` 的来源**：云枢平台自带的「导出」按钮只产出控件 HTML，`<style>` 与 `<script id="customScript">` 是硬编码默认值、自定义 HTML 区域没有插槽，即平台导出会丢掉表单里已写的自定义 CSS/JS/HTML。装 `scripts/cloudpivot-template-export.user.js`（油猴）后，表单设计页工具条「导出」图标左边会出现「本地模板」按钮，点一下产出带这三块内容的 `template.html`，直接覆盖根目录的 `template.html` 再 `npm run extract`。
+**`template.html` 的来源**：云枢平台自带的「导出」按钮只产出控件 HTML，`<style>` 与 `<script id="customScript">` 是硬编码默认值、自定义 HTML 区域没有插槽，即平台导出会丢掉表单里已写的自定义 CSS/JS/HTML。装 `scripts/cloudpivot-template-export.user.js`（油猴）后，表单设计页工具条「导出」图标左边会出现「本地模板」按钮，点一下产出带这三块内容的 `template-<表单编码>-YYMMDD_HHmmss.html`（表单编码取自路由里的 `form-design/{表单编码}`），把它复制为根目录的 `template.html` 再 `npm run extract`，或不覆盖直接 `npm run extract -- <导出文件路径>`。
+
+导出文件在 `<body>` 后写入一行 `<!--cloudpivot-form-code:表单编码-->`，`npm run build-import` 靠它给导入产物命名。旧导出文件没有这行时，用 `npm run build-import -- --code=MDL202611214110` 手动指定，否则文件名里是 `unknown`。
+
+同一脚本在「本地模板」左边还有「导入模板」按钮：点击弹出文件选择框，选 `dist/template-<表单编码>-import.html`，脚本会切到「在线开发」、用平台自己的 `getCodes` 拆出 HTML/CSS/JS、弹确认框显示文件表单编码与三块内容大小，**文件编码与当前页面路由里的编码对不上（或文件没有编码标记）时确认框顶部显示红色警告**，确认后调用平台解析器更新控件树与 `elements`。**导入只改草稿状态，保存与发布仍由人点击**；取消或解析失败会回滚编辑器内容。
 
 **典型工作流**：
 
@@ -220,6 +232,11 @@ npm run dev            # TypeScript 监听模式（仅类型检查）
 如果已编辑 custom.js/css，只更新类型：
   1. 编辑 src/custom.html     # 手动添加新控件
   2. npm run refresh-types    # 更新类型，保留用户代码
+
+改完要整体回传云枢：
+  1. npm run build-import     # 生成 dist/template-<表单编码>-import.html
+  2. 云枢表单设计页切到「在线开发」，用该文件导入
+  3. 核对无误后手动点击「保存」（发布仍需自行点击）
 ```
 
 ---
@@ -234,6 +251,12 @@ npm run dev            # TypeScript 监听模式（仅类型检查）
 | `src/custom.css` | CSS 样式 | CSS 编辑窗口 |
 | `src/custom.js` | JavaScript 代码（含类型提示注释） | 直接复制到 JS 编辑窗口 |
 | `src/custom-types.d.ts` | 类型定义（仅开发时使用） | - |
+
+**由 `npm run build-import` 生成**（`dist/` 已在 `.gitignore` 中，不入库）：
+
+| 文件 | 说明 | 用途 |
+|------|------|------|
+| `dist/template-<表单编码>-import.html` | 三文件合并的导入用单文件，已去掉运行时 `templateScript` 标签 | 云枢「在线开发」视图导入 |
 
 **⚠️ 重要：`custom.js` 文件只能写 JavaScript 语法！**
 
@@ -259,7 +282,7 @@ npm run dev            # TypeScript 监听模式（仅类型检查）
 
 ## API 参考文档
 
-官方 API 原文位于仓库根 `表单开发API/`（表单二开 JS 的唯一出处），OpenWebAPI 服务端接口原文位于 `OpenWebAPI/`。「查什么 → 读哪个文件」的路由表见 `.agents/skills/cloudpivot-form-dev/SKILL.md`「API 原文路由」一节，此处不再重复。
+官方 API 原文位于 `docs/form-api/`（表单二开 JS 的唯一出处），OpenWebAPI 服务端接口原文位于 `docs/openwebapi/`，第三方客户端 OpenAPI 原文位于 `docs/openapi/`。「查什么 → 读哪个文件」的路由表见 `.agents/skills/cloudpivot-form-dev/SKILL.md`「API 原文路由」一节，此处不再重复。
 
 ---
 
@@ -273,19 +296,27 @@ src/             # 生成的可编辑文件
   custom.css     # CSS 样式
   custom.js      # JavaScript 代码（checkJs 提供类型补全）
   custom-types.d.ts  # 自动生成的类型
-scripts/         # 构建工具 (extract.mjs) - Node.js ESM
+scripts/         # 构建工具 (extract.mjs, build-import.mjs) - Node.js ESM
+dist/            # 导入用单文件（npm run build-import 产出，不入库）
 template.html    # 源表单模板（只读，来自云枢）
-表单开发API/     # 官方 API 文档
+docs/            # 外部参考原文（云枢官方文档，只读）
+  form-api/      # 表单开发 API（表单二开 JS 的唯一出处）
+  openapi/       # 第三方客户端 OpenAPI（/api/openapi/v3）
+  openwebapi/    # OpenWebAPI 平台接口（表单内 /api/v2）
 ```
 
 ---
 
-## 无构建产物
+## 两种回传方式
 
-此工具**不会**生成单个合并的 HTML 文件。用户需要手动复制：
+**手动复制三份文件**（无需编译）：
 - `custom.html` → 云枢 HTML 编辑窗口
 - `custom.css` → 云枢 CSS 编辑窗口
-- `custom.js` → 云枢 JS 编辑窗口（纯 JavaScript，无需编译）
+- `custom.js` → 云枢 JS 编辑窗口
+
+**导入合并文件**：`npm run build-import` 产出 `dist/template-<表单编码>-import.html`，用油猴脚本的「导入模板」按钮（或云枢「在线开发」视图）一次导入 HTML/JS/CSS。
+
+导入产物的边界与云枢解析器一致，因此有已知损失：表单级布局/边框模式、权限、数据规则、模型字段完整定义、`history-opt-*` 等非 `data-*` 元数据无法由 HTML 表达；自定义 HTML 控件的 key 会被平台重新生成为 `Html1`、`Html2`……**导入产物只用于同一表单，不要跨模型套用；导入只更新草稿，保存与发布由人点击。**
 
 ---
 

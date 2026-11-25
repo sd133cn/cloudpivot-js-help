@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // 云枢 OpenAPI 请求校验器 - 以 Knife4j 导出为契约，离线校验端点与请求体
-// 默认契约 OpenWebAPI/04_…json（表单自己用的 22 端点）；换契约用 --spec <任意 OpenAPI 3.0 json>
+// 默认契约 docs/openwebapi/04_…json（表单自己用的 22 端点）；换契约用 --spec <任意 OpenAPI 3.0 json>
 // 用法：
 //   node scripts/validate-webapi.mjs --list                     列出全部端点
 //   node scripts/validate-webapi.mjs <端点> --schema            打印该端点请求体结构摘要
@@ -18,7 +18,7 @@ import { dirname, join, resolve } from 'node:path';
 
 // --spec 参数先行摘除（在 argv 其它处理前）
 const argv = process.argv.slice(2);
-let docPath = join(dirname(fileURLToPath(import.meta.url)), '..', 'OpenWebAPI', '04_OpenWebAPI_OpenAPI.json');
+let docPath = join(dirname(fileURLToPath(import.meta.url)), '..', 'docs', 'openwebapi', '04_OpenWebAPI_OpenAPI.json');
 const si = argv.indexOf('--spec');
 if (si >= 0) {
   const v = argv[si + 1];
@@ -205,7 +205,7 @@ if (!argv.length || argv.includes('--help')) {
   node scripts/validate-webapi.mjs --list                    列出全部端点
   node scripts/validate-webapi.mjs <端点> --schema           打印请求体结构摘要
   node scripts/validate-webapi.mjs <端点> --body <文件|->    校验请求体
-  任意命令加 --spec <json>   换契约（默认 OpenWebAPI/04_…）
+  任意命令加 --spec <json>   换契约（默认 docs/openwebapi/04_…）
 
 端点可写短形式（如 /bizobject/submit、/workflow/start），按尾段匹配两套前缀`);
   process.exit(2);

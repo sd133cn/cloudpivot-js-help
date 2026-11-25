@@ -6,7 +6,7 @@ description: 云枢（CloudPivot）低代码表单二开写法：写或改 src/c
 
 本 skill 只装**按需查的写法**。约束的唯一出处是仓库根 `AGENTS.md`「关键约束」，此处不重复。
 
-语料基线：平台 **6.15.13**（`表单开发API/` 与 `OpenWebAPI/` 均导出于该版本）。平台升级后，先核对原文再信参考。
+语料基线：平台 **6.15.13**（`docs/form-api/` 与 `docs/openwebapi/` 均导出于该版本）。平台升级后，先核对原文再信参考。
 
 ## 执行顺序
 
@@ -39,7 +39,7 @@ description: 云枢（CloudPivot）低代码表单二开写法：写或改 src/c
 | 取子表勾选行                                                                                | `getCheckedRows()`                                                                                                                                                            |
 | 监听控件变化                                                                                | `valueChange.subscribe` / `propertyChange.subscribe`                                                                                                                          |
 | 监听子表行列变化                                                                              | `rowChange` / `getRowValueChange(i)` / `getColumnValueChange(key)`                                                                                                            |
-| 发 HTTP 请求                                                                             | 全局 `axios`；URL 前缀与响应层数规则的唯一出处是 `references/webapi.md`「通用契约」，别照 `表单开发API/` 里的 `config.apiHost` 示例拼平台接口                                                                         |
+| 发 HTTP 请求                                                                             | 全局 `axios`；URL 前缀与响应层数规则的唯一出处是 `references/webapi.md`「通用契约」，别照 `docs/form-api/` 里的 `config.apiHost` 示例拼平台接口                                                                         |
 | 提示 / 确认框                                                                              | `this.$message.success                                                                                                                                                        |
 | 代码里触发提交、暂存                                                                            | `this.doAction('submit'                                                                                                                                                       |
 | 隐藏按钮                                                                                  | 系统按钮在 `onLoad` 设 `visible=false`；自定义按钮在 `onRendered` 设 `actionController.visible=false`                                                                                       |
@@ -51,16 +51,16 @@ description: 云枢（CloudPivot）低代码表单二开写法：写或改 src/c
 
 ## API 原文路由
 
-原文都在仓库根，是从平台导出的，API 的唯一出处——不要抄进 references：
+原文都在仓库 `docs/` 下，是从平台导出的，API 的唯一出处——不要抄进 references：
 
-| 查什么                              | 读哪个                                                         |
-| -------------------------------- | ----------------------------------------------------------- |
-| 生命周期事件的完整参数与时序                   | `表单开发API/2.表单生命周期API.md`                                    |
-| 控件属性、方法、事件名                      | `表单开发API/3.表单控件API.md`                                      |
-| 下拉/单选等选项配置                       | `表单开发API/4.表单控件选项API.md`                                    |
-| `h3form` 全局变量（config、userInfo 等） | `表单开发API/表单在线开发全局上下文变量（h3form）标准化属性及释义.md`                  |
-| 子表扩展 API                         | `表单开发API/表单HTML二开-子表API扩展.md`                               |
-| 子表自定义按钮挂载                        | `表单开发API/使用说明-子表新增自定义按钮及事件挂载.md`                            |
-| 冷门用法、报错语义                        | `表单开发API/1.表单开发Q&A.md`                                      |
-| OpenWebAPI 端点完整字段、枚举、schema      | `OpenWebAPI/04_OpenWebAPI_OpenAPI.json`（grep 端点名或 schema 名） |
-| OpenWebAPI 端点的请求/响应示例            | `OpenWebAPI/04_OpenWebAPI.md`（按「## 端点名」定位「请求示例」）            |
+| 查什么                              | 读哪个                                                                |
+| -------------------------------- | ------------------------------------------------------------------- |
+| 生命周期事件的完整参数与时序                   | `docs/form-api/2.表单生命周期API.md`                                    |
+| 控件属性、方法、事件名                      | `docs/form-api/3.表单控件API.md`                                      |
+| 下拉/单选等选项配置                       | `docs/form-api/4.表单控件选项API.md`                                    |
+| `h3form` 全局变量（config、userInfo 等） | `docs/form-api/表单在线开发全局上下文变量（h3form）标准化属性及释义.md`            |
+| 子表扩展 API                         | `docs/form-api/表单HTML二开-子表API扩展.md`                               |
+| 子表自定义按钮挂载                        | `docs/form-api/使用说明-子表新增自定义按钮及事件挂载.md`                          |
+| 冷门用法、报错语义                        | `docs/form-api/1.表单开发Q&A.md`                                      |
+| OpenWebAPI 端点完整字段、枚举、schema      | `docs/openwebapi/04_OpenWebAPI_OpenAPI.json`（grep 端点名或 schema 名） |
+| OpenWebAPI 端点的请求/响应示例            | `docs/openwebapi/04_OpenWebAPI.md`（按「## 端点名」定位「请求示例」）          |

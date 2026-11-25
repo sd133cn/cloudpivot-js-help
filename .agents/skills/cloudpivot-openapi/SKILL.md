@@ -7,7 +7,7 @@ description: 云枢第三方客户端 OpenAPI（/api/openapi/v3）对接写法�
 
 外部系统连云枢走 **OpenAPI V3**（`/api/openapi/v3/...`）：OAuth2 token 鉴权、操作人 `userId` 每请求显式传。与表单页内的 OpenWebAPI(`/api/v2`) 是两套口径，**端点、请求体形状、鉴权都不同，不要互相照搬**——最常见翻车是把 04 的 `{bizObject:{...}}` 包装形状抄进 v3 请求体（v3 是平铺，见 endpoints.md「通用契约」）。
 
-语料基线：官方《Open API（面向客户端接入）》v2.0 协议 + 平台 **6.15.13** 导出，原文随本 skill 打包在 `references/raw/`（`00_接入协议.md` 协议层，`03_*` 端点 schema；若项目根恰好也有 `OpenAPI/` 目录且同版本，与 raw 同源、行号一致）。平台升级后先核对原文再信参考。
+语料基线：官方《Open API（面向客户端接入）》v2.0 协议 + 平台 **6.15.13** 导出，原文随本 skill 打包在 `references/raw/`（`00_接入协议.md` 协议层，`03_*` 端点 schema；若项目 `docs/openapi/` 恰好也有同版本原文，与 raw 同源、行号一致）。平台升级后先核对原文再信参考。
 
 ## 执行顺序
 

@@ -2,9 +2,9 @@
 
 这组接口是**云枢表单自己使用**的——表单二开 JS 用页面全局 `axios` 调它们（相对路径，见「通用契约」URL 条），是控件 API 够不着时的取数通道：拉其他单据列表、发起与审批流程、查组织人员。页面内交互仍走 `code-patterns.md` 的控件 API。
 
-**不是第三方对接接口**：本文件只管表单页面内调用；外部系统对接云枢走 skill `cloudpivot-openapi`（`/api/openapi/v3`，token 鉴权、每请求显式传 `userId`，原文 `OpenAPI/`），不要拿这 22 端点去对接外部系统。
+**不是第三方对接接口**：本文件只管表单页面内调用；外部系统对接云枢走 skill `cloudpivot-openapi`（`/api/openapi/v3`，token 鉴权、每请求显式传 `userId`，原文 `docs/openapi/`），不要拿这 22 端点去对接外部系统。
 
-语料出处：平台 6.15.13 的 Knife4j 导出，原文在仓库根 `OpenWebAPI/`——`04_OpenWebAPI_OpenAPI.json`（结构化 schema，适合 grep）、`04_OpenWebAPI.md`（**每个端点带请求/响应示例**，拿不准请求体长什么样就按端点名定位读示例）。本文件是蒸馏，字段级细节以原文为准。
+语料出处：平台 6.15.13 的 Knife4j 导出，原文在仓库 `docs/openwebapi/`——`04_OpenWebAPI_OpenAPI.json`（结构化 schema，适合 grep）、`04_OpenWebAPI.md`（**每个端点带请求/响应示例**，拿不准请求体长什么样就按端点名定位读示例）。本文件是蒸馏，字段级细节以原文为准。
 
 ## 通用契约
 
@@ -12,7 +12,7 @@
 - URL：**表单页面内 axios 直接用相对路径 `'/api/v2/...'`**（6.14.103 实测跑通，不用拼 `config.apiHost`，更不是导出里的双前缀 `/api/api/v2/...`——那是 Knife4j 把 context-path 拼上去的显示产物）。
 - 响应包装**有两种形态，取数要兼容**：导出 schema 声明统一包装 `{ "data": {...}, "errcode": 0, "errmsg": "…", "traceId": "" }`（`errcode === 0` 成功，失败用 `errmsg` 给用户、报障带 `traceId`）；但 6.14.103 页面会话实测 `/bizobject/load`、`/bizobject/list` **无包装**，`bizObject`/`bizObjectPage` 直接挂 `res.data` 下。写 `pg = r.bizObjectPage || (r.data && r.data.bizObjectPage)`，errcode 仅在 `r.errcode !== undefined` 时才检查。
 - 鉴权：导出只声明了 `Authorization` 请求头（apiKey/header）。从表单页面调用时**自带页面会话**（axios + `config.apiHost` 即可，和「HTTP 请求」范式一样不用管 token）；多数查询隐式按会话解析出的"当前用户"限定范围（如待办只返回本人任务）。这套接口只配表单页面会话用，不对外部系统提供对接口径。
-- **拼请求体拿不准就对照原文**：`OpenWebAPI/04_OpenWebAPI.md` 按端点名读「请求示例」；语雀《Open API（面向客户端接入）》的「业务对象数据入参出参说明」表是数据项入参格式的官方口径（本文件「数据项值格式」节即其蒸馏）。
+- **拼请求体拿不准就对照原文**：`docs/openwebapi/04_OpenWebAPI.md` 按端点名读「请求示例」；语雀《Open API（面向客户端接入）》的「业务对象数据入参出参说明」表是数据项入参格式的官方口径（本文件「数据项值格式」节即其蒸馏）。
 
 ## 核心对象 BizObjectModel（表单数据类接口共用）
 
@@ -129,7 +129,7 @@ axios.post('/api/runtime/query/listSkipQueryList', body).then(function (res) {
 ```
 
 - `size` 是**单页上限**不是总量上限：`totalElements` 大于 `size` 时仍有下一页（`page` 从 0 起）。去重后的取值数一般远小于此，但别默认一次拿全——拿不准就先看 `totalElements` 和 `content.length` 是否相等。
-- 请求体是「查询表单数据列表接口」`QueryListModel` 的子集（原文 `OpenWebAPI/04_OpenWebAPI.md` 该节，`filters`/`orderByFields`/`page`/`options.customDisplayColumns` 同一套字段），所以**加过滤条件照「高频细节」的 `filters` 写法**。6.14.103 实测 filters 在本端点**生效**，拿到的就是「满足条件的去重值」：文本列 `CX` 上 `Like '线'` → 5 条、`Eq '1线'` → 1 条、不存在的值 → 0 条（同批基准 7 条）。`propertyType` 照「数据项值格式」给（文本 `'1'`、人员 `'50'`、日期 `'3'`），`op` 与 `queryFilterType` 两个键都带；返回 0 条先分清是条件没中还是数据权限过滤。
+- 请求体是「查询表单数据列表接口」`QueryListModel` 的子集（原文 `docs/openwebapi/04_OpenWebAPI.md` 该节，`filters`/`orderByFields`/`page`/`options.customDisplayColumns` 同一套字段），所以**加过滤条件照「高频细节」的 `filters` 写法**。6.14.103 实测 filters 在本端点**生效**，拿到的就是「满足条件的去重值」：文本列 `CX` 上 `Like '线'` → 5 条、`Eq '1线'` → 1 条、不存在的值 → 0 条（同批基准 7 条）。`propertyType` 照「数据项值格式」给（文本 `'1'`、人员 `'50'`、日期 `'3'`），`op` 与 `queryFilterType` 两个键都带；返回 0 条先分清是条件没中还是数据权限过滤。
 - 路径**不在 Knife4j 导出里**（`/api/runtime/...` 是平台前端自己在用的运行时接口），别去 `04_OpenWebAPI_OpenAPI.json` 找它；鉴权与相对路径规则和其他接口一致，页面会话自带。
 
 此路不通的两条（6.14.103 实测证伪，别再试）：
