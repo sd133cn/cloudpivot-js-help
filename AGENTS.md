@@ -303,6 +303,7 @@ docs/            # 外部参考原文（云枢官方文档，只读）
   form-api/      # 表单开发 API（表单二开 JS 的唯一出处）
   openapi/       # 第三方客户端 OpenAPI（/api/openapi/v3）
   openwebapi/    # OpenWebAPI 平台接口（表单内 /api/v2）
+assets/          # README 截图（云枢界面示意，英文文件名）
 ```
 
 ---

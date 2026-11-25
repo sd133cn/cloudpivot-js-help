@@ -109,7 +109,7 @@ npm install
 
    > 云枢自带的「导出」按钮只导出控件 HTML，表单里已写的 CSS / JS / 自定义 HTML 会被丢掉。用平台自带导出时，请核对产物里 `<style>` 与 `<script id="customScript">` 是否为真实内容。
    >
-   > ![云枢导出HTML模板位置示意](云枢导出html位置.png)
+   > ![云枢导出HTML模板位置示意](assets/cloudpivot-export-html.png)
 
 ### 第三步：生成类型定义
 
@@ -144,7 +144,7 @@ npm run extract
 …  ⬆ 导入模板   ⬇ 本地模板   ⬇ 导出（云枢自带） …
 ```
 
-![表单设计页工具条上的「导入模板」「本地模板」按钮](云枢导入导出按钮位置.png)
+![表单设计页工具条上的「导入模板」「本地模板」按钮](assets/cloudpivot-toolbar-buttons.png)
 
 红框里就是脚本新增的两个按钮，右边依次是云枢自带的「导出」「预览」「保存」。鼠标悬停在按钮上有各自的作用说明。
 
@@ -188,7 +188,7 @@ npm run build-import
 4. **文件编码与当前页面编码对不上（或文件没有编码标记）时，确认框顶部显示红色警告**，确认按钮默认置灰，避免把 A 表单的产物写进 B 表单；
 5. 取消或解析失败会回滚编辑器内容。
 
-![导入确认框：表单编码核对 + HTML/CSS/JS 大小对比](云枢导入确认框.png)
+![导入确认框：表单编码核对 + HTML/CSS/JS 大小对比](assets/cloudpivot-import-dialog.png)
 
 确认框里上面两行核对表单编码（当前页面 / 所选文件），中间是控件数量与 HTML / CSS / JS 字符数的导入前后对比，底部提醒导入只更新草稿。编码一致时「确认导入」可直接点击；不一致时顶部出现红色警告、按钮置灰。
 
@@ -393,6 +393,7 @@ cloudpivot-js-help/
 │   ├── build-import.mjs                # 合并导入用单文件
 │   ├── validate-webapi.mjs             # OpenWebAPI 请求校验器
 │   └── cloudpivot-template-export.user.js  # 篡改猴脚本：云枢页的导入/导出按钮
+├── assets/                 # README 截图（云枢界面示意）
 ├── dist/                   # build-import 产出（导入文件，不入库）
 └── AGENTS.md               # AI Agent 指引文档（被 AI 工具自动载入）
 ```
